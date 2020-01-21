@@ -1,0 +1,93 @@
+name: puccin
+version: "0.0.2"
+author: David Northover
+about: Manages rust phylogenetics functionality from command line.
+args:
+    - verbose:
+        short: v
+        multiple: true
+        help: Sets the level of verbosity
+subcommands:
+    - tree:
+        about: Manipulates phylogenetic trees.
+        version: 0.0.2
+        args:
+            - TREE:
+                help: Input tree file.
+                required: true
+                index: 1
+            - format:
+                help: Format of the input file ("phylip/nhx/newick"). Defaults to based on file extension.
+                short: f
+                long: format
+                value_name: FORMAT
+            - output:
+                help: Name of the output file, after all the optioned modifications.  Required.
+                short: o
+                long: output
+                value_name: FILE
+                required: true
+            - annotate:
+                help: Annotate the tree file with external data, in csv format.
+                short: a
+                long: annotate
+                value_name: FILE
+            - trim:
+                help: Trims a tree according to a list of node names specified 1/line) in a file.
+                short: t
+                long: trim
+                value_name: FILE
+            - common_ancestor:
+                help: Reduces tree to common ancestor of given node names and its descendents.
+                short: c
+                long: common_ancestor
+                value_name: FILE
+            - leaf_export:
+                help: Exports the values of the leaf nodes to the specified csv file.
+                short: l
+                long: leaf_export
+                value_name: FILE
+    - bootstrap:
+        about: Does bootstrap significance analaysis.
+        version: 0.0.2
+        args:
+            - stats:
+                help: Values (both distrbution to check for significance and known distribution)
+                short: s
+                long: stats
+                value_name: FILE
+            - counts:
+                help: Total raw values for both tested distrbution and known distrbution.
+                short: c
+                long: counts
+                value_name: FILE
+    - paml_analysis:
+        about: Runs analysis of PAML data.  Very little right now; essentially a stub.
+        version: 0.0.2
+        args:
+            - compare_dir:
+                help: Directory to compare PAML runs against TAED data.
+                short: d
+                long: compare_dir
+                value_name: DIRECTORY
+    - structure_analysis:
+        about: Runs an analaysis of protein secondary structure.  Currently limited to TAED data.
+        version: 0.1.2
+        args:
+            - config:
+                help: Location of configuration file specifying data locations of TAED.
+                short: c
+                long: config
+                value_name: FILE
+    - completions:
+        about: Generates shell completions for non-bash shells.  (Bash is compiled).
+        version: 0.0.1
+        args:
+            - SHELL:
+                required: true
+                index: 1
+                possible_values: 
+                    - zsh
+                    - fish
+                    - powershell
+                    - elvish
