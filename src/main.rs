@@ -221,13 +221,21 @@ fn manipulate_tree(matches: &ArgMatches) {
 		matches.value_of("TREE").unwrap(), 
 		matches.value_of("format").unwrap_or("extension")).unwrap();
 	
+	let collapse = !matches.is_present("no-collapse");
+	
 	if matches.is_present("annotate") {
 		tree.annotate_from_csv(matches.value_of("annotate").unwrap(), ",").unwrap(); 
 	}
 
 	if matches.is_present("trim") {
 		let node_map = parse_name_list(matches.value_of("trim").unwrap()).unwrap();
-		tree.trim(&node_map);
+		tree.trim(&node_map, collapse);
+	}
+
+	if matches.is_present("filter") {
+		let filter_map = parse_name_list(matches.value_of("filter").unwrap()).unwrap().keys().map(|x| x.clone()).collect();
+		println!("{:?}", filter_map);
+		tree.filter(&filter_map, collapse);
 	}
 
 	if matches.is_present("common_ancestor") {

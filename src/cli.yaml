@@ -66,7 +66,7 @@ subcommands:
                 long: annotate
                 value_name: FILE
             - trim:
-                help: Trims a tree according to a list of node names specified 1/line) in a file.
+                help: Trims a tree down to a list of node names specified 1/line) in a file.
                 short: t
                 long: trim
                 value_name: FILE
@@ -80,6 +80,15 @@ subcommands:
                 short: l
                 long: leaf_export
                 value_name: FILE
+            - filter:
+                help: Filters a list of node names specfied 1/line in a file.
+                short: i
+                long: filter
+                value_name: FILE
+            - no-collapse:
+                help: Prevents trim and filter from collapsing nodes with 1 child.
+                long: no-collapse
+                value_name: BOOLEAN
     - bootstrap:
         about: Does bootstrap significance analaysis.
         version: 0.0.2
