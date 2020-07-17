@@ -8,6 +8,39 @@ args:
         multiple: true
         help: Sets the level of verbosity
 subcommands:
+    - alignment:
+        about: Manipulates alignments
+        version: 0.0.2
+        args:
+            - ALIGNMENT:
+                help: Input alignment file.
+                required: true
+                index: 1
+            - format:
+                help: Format of the input file ("fasta"). Defaults to based on file extension.
+                short: f
+                long: format
+                value_name: FORMAT
+            - output:
+                help: Name of the output file, after all the optioned modifications.  Required.
+                short: o
+                long: output
+                value_name: FILE
+                required: true
+            - exclude:
+                help: Filename of a separate file to exclude the records from.
+                short: e
+                long: exclude
+                value_name: FILE
+                required: false
+            - ex_format:
+                help: Format of file to exclude.
+                long: ex_format
+                value_name: FORMAT
+                required: false
+            - degap:
+                help: Remove all gaps from alignment, getting a list of sequences instead.
+                long: degap
     - tree:
         about: Manipulates phylogenetic trees.
         version: 0.0.2

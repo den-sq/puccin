@@ -18,6 +18,7 @@ use std::fs::read_dir;
 use std::path::PathBuf;
 use std::path;
 use std::io;
+use std::io::Write;
 
 use phylo::seq::{SeqData};
 use phylo::paml::PAML;
@@ -25,6 +26,8 @@ use phylo::prot::{ExtendedProteinStructure, ProteinData};
 use phylo::analysis::{ProteinAnalytics, StatGroupExport, ResFeature, StatGroup};
 use phylo::utils::{arithmatic_median, parse_name_list, write_serializable_data};
 use phylo::clade::Clade;
+use phylo::alignment::Alignment;
+use phylo::seq::Seq;
 
 use clap::{App, ArgMatches, Shell};
 
@@ -164,6 +167,50 @@ fn compare_paml_runs(root_dir: String, paml_runs: Vec<(&str, &str)>) {
 
 }	// 4700416|56871
 
+
+/// Manages the alignment manipulation steps
+/// 
+/// Parameters:
+/// 
+/// # matches:  Clap argument matches.
+fn manipulate_alignment(matches: &ArgMatches) {
+	let mut alignment: Alignment<Seq> = Alignment::<Seq>::read(
+		matches.value_of("ALIGNMENT").unwrap(),
+		matches.value_of("format").unwrap_or("extension")).unwrap();
+	
+	if matches.is_present("exclude") {
+		let secondary = Alignment::<Seq>::read(
+			matches.value_of("exclude").unwrap(),
+			matches.value_of("ex_format").unwrap_or("extension")).unwrap();
+
+		alignment = alignment.filter_by_id(alignment.unshared(secondary));
+	}
+
+	if matches.is_present("degap") {
+		let mut serial = String::new();
+		for seq in alignment.degap() {
+			let mut pos = 0;			
+			let residues = seq.seq();
+			serial.push_str(&format!(">{}\n", seq.id()));
+			while (pos + 80) < residues.len() {
+				serial.push_str(&format!("{}\n", residues[pos..pos + 80].iter().collect::<String>()));
+				pos += 80;
+			}
+			serial.push_str(&format!("{}\n",residues[pos..residues.len()].iter().collect::<String>()));
+		}
+		match File::create(matches.value_of("output").unwrap()) {
+            Ok(mut handle) => {
+                match handle.write_all(serial.as_bytes()) {
+					Ok(()) => {},
+					Err(e) => println!("Error writing degapped sequences to file: {}", e)
+				}
+			}, Err(e) => println!("Error writing degapped sequences to file: {}", e)
+		}
+	} else if let Err(e) = alignment.write(matches.value_of("output").unwrap(), "extension") {
+		println!("Error writing alignment data to file: {}", e);
+	}
+	
+}
 /// Manages the tree manipulation steps
 /// 
 /// Parameters:
@@ -590,6 +637,7 @@ fn main() {
                 &mut io::stdout()
             );
 		},
+		("alignment", Some(matches)) => { manipulate_alignment(matches); },
 		("tree", Some(matches)) => { manipulate_tree(matches); },
 		("bootstrap", Some(matches)) => { manage_bootstrap(matches, verbosity); },
 		("paml_analysis", Some(matches)) => {
