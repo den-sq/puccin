@@ -220,7 +220,7 @@ fn manipulate_tree(matches: &ArgMatches) {
 	let mut tree: Clade = Clade::read(
 		matches.value_of("TREE").unwrap(), 
 		matches.value_of("format").unwrap_or("extension")).unwrap();
-	
+
 	let collapse = !matches.is_present("no-collapse");
 	
 	if matches.is_present("annotate") {
